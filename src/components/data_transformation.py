@@ -29,23 +29,23 @@ class DataTransformation:
             numerical_features= ["writing score", "reading score"]
             categorical_features= [
                 "gender",
-                "race_ethnicity",
-                "parental_level_of_education",
+                "race/ethnicity",
+                "parental level of education",
                 "lunch",
-                "test_preparation_course"
+                "test preparation course"
             ]
 
             num_pipeline = Pipeline(
                 steps= [
                     ("imputer", SimpleImputer(strategy="median")),
-                    ("scaler", StandardScaler())
+                    ("scaler", StandardScaler(with_mean=False))
                 ]
             )
             cat_pipeline = Pipeline(
                 steps=[
                     ("imputer", SimpleImputer(strategy="most_frequent")),
                     ("one_hot_encoder", OneHotEncoder()),
-                    ("scaler", StandardScaler())
+                    ("scaler", StandardScaler(with_mean=False))
                 ]
             )
             logging.info("numerical columns standard scaling completed")
@@ -91,7 +91,7 @@ class DataTransformation:
             logging.info(f"saved preprocessing object")
             
             save_object(
-                filepath= self.data_transformation_config.preprocessor_obj_file_path,
+                file_path= self.data_transformation_config.preprocessor_obj_file_path,
                 obj= preprocessing_obj
             )
 
@@ -99,13 +99,8 @@ class DataTransformation:
 
                 train_arr,
                 test_arr,
-                self.data_transformation_config.preprocessor_obj_file_path
+                self.data_transformation_config.preprocessor_obj_file_path,
             )
         except Exception as e:
             raise CustomException(e, sys)   
         
-if __name__ =="__main__":
-    train_data= "artifacts/train.csv"
-    test_data= "artifacts/test.csv"
-    data_transformation=DataTransformation()
-    data_transformation.initiate_data_transformation(train_data,test_data)
